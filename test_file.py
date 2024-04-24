@@ -1,4 +1,4 @@
-
+import math
 
 layers = [0,1,3,4,5,6]
 
@@ -17,8 +17,6 @@ sprite = [lay1,lay2,lay3]
 
 MAX_SPREAD = 10
 
-for i in range(len(sprite)):
-    for spread in range(MAX_SPREAD):
-        print(sprite[i].y)
-        sprite[i].y +=1
-
+for i in range(300):
+    y = math.sin(math.radians(i))
+    print(i,y)
