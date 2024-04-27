@@ -8,10 +8,12 @@ SCREEN = pygame.display.set_mode((800,800),vsync=1)
 pygame.display.set_caption("Sprite stacking")
 DARK_GREY = (20,20,20)
 WHITE = (255,255,255)
-SCALE = 300
-TARGET_FPS = 60
+SCALE = 200
+TARGET_FPS = 120
 font = pygame.font.Font('fonts\ARIALBD 1.TTF',24)
 clock = pygame.time.Clock()
+START_Y = 400
+
 
 class Kart_layer(pygame.sprite.Sprite):
     def __init__(self,image,spacing):
@@ -20,7 +22,7 @@ class Kart_layer(pygame.sprite.Sprite):
         self.surface = self.image
         self.rect = self.image.get_rect(center=(self.image.get_width(),self.image.get_height()))
         self.rect.x = SCREEN.get_width()/2 - (SCALE/2)
-        self.rect.y = 400 + int(-(SCALE/ 90)*spacing)
+        self.rect.y = START_Y + int(-(SCALE/ 90)*spacing)
         self.angle = 70
         self.image = pygame.transform.rotate(self.image,self.angle)
 
@@ -32,13 +34,14 @@ class Kart_layer(pygame.sprite.Sprite):
 #C:\Users\ztdnz\Desktop\Code files\Kart shifters\Kart1
 #x = listdir("/Users/ztdnz/Desktop/Code files/Kart shifters/Kart1")
 
-layers = listdir((os.path.abspath('Kart').replace("\\","/").removeprefix("C:").removesuffix("/Kart shifters")))
+layers = listdir((os.path.abspath('Indigo kart model\\Indigo kart').replace("\\","/").removeprefix("C:").removesuffix("/Kart shifters")))
+layers.sort(reverse=False)
 print(layers)
 
 for png in enumerate(layers):
     png_number = png[0]
     png_name = png[1]
-    layers[png_number] = "Kart/" + png_name
+    layers[png_number] = "Indigo kart model\\Indigo kart/" + png_name
 
 kart_layers = pygame.sprite.LayeredUpdates()
 
@@ -59,9 +62,8 @@ while run:
     clock.tick(TARGET_FPS)
     fps_counter()
 
-    Test_num +=1
-    
-    
+    Test_num +=0
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
@@ -72,17 +74,16 @@ while run:
     for layer in enumerate(layers):
         rotated_layer = kart_layers.get_sprite(layer[0])
         SCREEN.blit(rotated_layer.surface,rotated_layer.rect)
-        rotated_layer.angle -= .2
+        rotated_layer.angle -= .5
         rotated_layer.rotate() 
         rotated_layer.rect.y = rotated_layer.rect.y - (math.sin(math.radians(Test_num)%SCALE)) * (layer[0]/1.9)
 
         keys = pygame.key.get_pressed()
-        
+     
         if keys[pygame.K_w]:
             rotated_layer.rect.y -=layer[0]
         if keys[pygame.K_s]:
             rotated_layer.rect.y +=layer[0]
-        
         if keys[pygame.K_a]:
             rotated_layer.rect.x -=1 
         if keys[pygame.K_d]:

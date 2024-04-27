@@ -60,7 +60,7 @@ while run:
     wheel2.rect.centerx = wheel1.rect.centerx + 100
 
 
-  
+
     wheel1.rotate()
     wheel2.rotate()
     
