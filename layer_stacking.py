@@ -9,7 +9,7 @@ pygame.display.set_caption("Sprite stacking")
 DARK_GREY = (20,20,20)
 WHITE = (255,255,255)
 SCALE = 200
-TARGET_FPS = 120
+TARGET_FPS = 45
 font = pygame.font.Font('fonts\ARIALBD 1.TTF',24)
 clock = pygame.time.Clock()
 START_Y = 400
@@ -62,7 +62,7 @@ while run:
     clock.tick(TARGET_FPS)
     fps_counter()
 
-    Test_num +=0
+    Test_num +=1
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
