@@ -1,4 +1,4 @@
-import pygame
+import pygame  #pip install pygame
 import math
 pygame.font.init()
 import os 
