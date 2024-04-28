@@ -8,7 +8,7 @@ SCREEN = pygame.display.set_mode((800,800),vsync=1)
 pygame.display.set_caption("Sprite stacking")
 DARK_GREY = (20,20,20)
 WHITE = (255,255,255)
-SCALE = 200
+SCALE = 100
 TARGET_FPS = 60
 font = pygame.font.Font('fonts\ARIALBD 1.TTF',24)
 clock = pygame.time.Clock()

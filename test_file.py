@@ -27,7 +27,7 @@ class Car(pygame.sprite.Sprite):
         self.max_velocity = 5
         self.acceleration = 0.008
 
-    def rotate(self,left=False,right=False):
+    def rotate(self,left=False,right=False): 
         if car1.velocity > 0.6:
             if left: 
                 self.angle += self.rotation_val
@@ -125,9 +125,11 @@ while run:
 
     if keys[pygame.K_LSHIFT]:
         car1.rotation_val = 1.5
-        car1.velocity - 0.05
+        if keys[pygame.K_a] or keys[pygame.K_d]:
+            if car1.velocity > .5:
+                car1.velocity -=0.01
     else:
-        car1.rotation_val =3
+        car1.rotation_val = 3
     
 
  

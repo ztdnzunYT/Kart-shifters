@@ -30,7 +30,6 @@ class Wheel(pygame.sprite.Sprite):
 
 
 
-
 wheel1 = Wheel()
 wheel2 = Wheel()
 
