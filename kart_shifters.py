@@ -12,7 +12,7 @@ pygame.display.set_caption("Kart Shifters")
 class Wheel(pygame.sprite.Sprite):
     def __init__(self):
         super(Wheel,self).__init__()
-        self.image = pygame.transform.smoothscale(pygame.image.load("Kart model\sprite_13.png").convert_alpha(), (500,500))
+        self.image = pygame.transform.smoothscale(pygame.image.load("red kart model\sprite_13.png").convert_alpha(), (500,500))
         self.image = pygame.transform.rotate(self.image,90)
         self.surface = self.image
         self.rect = self.surface.get_rect(center=(self.image.get_width()/2,self.image.get_height()/2))

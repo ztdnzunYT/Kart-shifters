@@ -14,7 +14,6 @@ font = pygame.font.Font('fonts\ARIALBD 1.TTF',24)
 clock = pygame.time.Clock()
 START_Y = 400
 
-
 class Kart_layer(pygame.sprite.Sprite):
     def __init__(self,image,spacing):
         super(Kart_layer,self).__init__()
@@ -34,20 +33,15 @@ class Kart_layer(pygame.sprite.Sprite):
 #C:\Users\ztdnz\Desktop\Code files\Kart shifters\Kart1
 #x = listdir("/Users/ztdnz/Desktop/Code files/Kart shifters/Kart1")
 
-layers = listdir((os.path.abspath('Indigo kart model\\Indigo kart').replace("\\","/").removeprefix("C:").removesuffix("/Kart shifters")))
+layers = listdir('Indigo kart model\Indigo kart')
 layers.sort(reverse=False)
 print(layers)
 
-for png in enumerate(layers):
-    png_number = png[0]
-    png_name = png[1]
-    layers[png_number] = "Indigo kart model\\Indigo kart/" + png_name
-
 kart_layers = pygame.sprite.LayeredUpdates()
 
-for layer in enumerate(layers):
-    kart_layers.add(Kart_layer(pygame.transform.smoothscale(pygame.image.load(layer[1]).convert_alpha(),(SCALE,SCALE)),layer[0]))
-
+for png_number,png_name in enumerate(layers):
+    layers[png_number] = "Indigo kart model\\Indigo kart/" + png_name
+    kart_layers.add(Kart_layer(pygame.transform.smoothscale(pygame.image.load(layers[png_number]).convert_alpha(),(SCALE,SCALE)),png_number))
 all_sprite = kart_layers.get_sprite(9)
 
 def fps_counter():
@@ -55,14 +49,15 @@ def fps_counter():
     fps_text = font.render((str("Fps: ")+ str(fps)) , True, pygame.Color(WHITE))
     fps_rect = fps_text.get_rect(center=(70,50))
     SCREEN.blit(fps_text,fps_rect)
+
 Test_num = 0
 run = True
 while run:
     SCREEN.fill(DARK_GREY)
-    clock.tick(TARGET_FPS)
+    clock.tick(TARGET_FPS) 
     fps_counter()
 
-    Test_num +=1
+    Test_num +=0
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -88,6 +83,7 @@ while run:
             rotated_layer.rect.x -=1 
         if keys[pygame.K_d]:
             rotated_layer.rect.x +=1 
+    
   
 
     pygame.display.update()
