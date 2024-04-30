@@ -2,6 +2,7 @@ import pygame
 import math
 import os
 from os import listdir
+import pygame.ftfont
  
 clock = pygame.time.Clock()
 pygame.display.set_caption("Test drifting")
@@ -12,6 +13,16 @@ TARGET_FPS = 60
 SW = 800
 SH = 800
 screen = pygame.display.set_mode((SW,SH))
+
+class Fps:
+    def get_fps():
+        pygame.font.init()
+        font = pygame.font.Font('fonts\ARIALBD 1.TTF',24 )
+        fps = int(clock.get_fps())
+        fps_text = font.render('Fps: '+str(fps),True,WHITE)
+        fps_rect = fps_text.get_rect(center=(50,20))
+        screen.blit(fps_text,fps_rect)
+
 
 class Kart(pygame.sprite.Sprite):
     def __init__(self,rotation_val):
@@ -91,13 +102,15 @@ class Kart(pygame.sprite.Sprite):
            
 kart1 = Kart(3)  #sprite 
 
+layers = listdir('Indigo kart model\Indigo kart')
+
 
 
 run = True
 while run:
-
-    clock.tick(TARGET_FPS)
     screen.fill(GREY)
+    clock.tick(TARGET_FPS)
+    
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -131,9 +144,10 @@ while run:
         kart1.rotation_val = 3
     
 
- 
-    screen.blit(kart1.surf,kart1.rect)
     
+
+    screen.blit(kart1.surf,kart1.rect)
+    Fps.get_fps()
 
 
 
