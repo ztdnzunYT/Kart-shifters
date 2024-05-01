@@ -4,13 +4,13 @@ pygame.font.init()
 import os 
 from os import *
 
-SCREEN = pygame.display.set_mode((800,800),vsync=1)
+SCREEN = pygame.display.set_mode((650,650),vsync=1)
 pygame.display.set_caption("Sprite stacking")
 DARK_GREY = (20,20,20)
 WHITE = (255,255,255)
 SCALE = 100
 TARGET_FPS = 60
-font = pygame.font.Font('fonts\\ARIALBD 1.TTF',24)
+font = pygame.font.Font('fonts/ARIALBD 1.TTF',24)
 clock = pygame.time.Clock()
 START_Y = 400
 
@@ -28,6 +28,7 @@ class Kart_layer(pygame.sprite.Sprite):
         self.rotation_val = 3
         self.acceleration = 0.008
         self.image = pygame.transform.rotate(self.image,self.angle)
+        self.surface = pygame.transform.rotate(self.image,self.angle)
       
     def rotate(self,left=False,right=False):
         if self.velocity > 0.6:
@@ -39,20 +40,24 @@ class Kart_layer(pygame.sprite.Sprite):
         self.rect = self.surface.get_rect(center=(self.rect.center))
         self.angle = self.angle % 360
 
-
-
-    def move(self):
-        self.velocity = min((self.velocity + self.acceleration),5)
+    def move(self,foward=False,backward=False):
         radians = math.radians(self.angle)
         vertical = math.cos(radians) * self.velocity 
         horizontal = math.sin(radians) * self.velocity
-        self.rect.x -= horizontal
-        self.rect.y -= vertical 
+        if foward:
+            self.velocity = min((self.velocity + self.acceleration),5)
+            self.rect.x -= horizontal
+            self.rect.y -= vertical 
+    
+    def brake(self):
+        pass
+
+        
         
 #C:\Users\ztdnz\Desktop\Code files\Kart shifters\Kart1
 #x = listdir("/Users/ztdnz/Desktop/Code files/Kart shifters/Kart1")
 
-layers = listdir((os.path.abspath('Indigo kart model\\Indigo kart').replace("\\","/").removeprefix("C:").removesuffix("/Kart shifters")))
+layers = listdir((os.path.abspath('Indigo kart model//Indigo kart').replace("\\","/").removeprefix("C:").removesuffix("/Kart shifters")))
 
 layers.sort(reverse=False)
 print(layers)
@@ -60,7 +65,7 @@ print(layers)
 for png in enumerate(layers):
     png_number = png[0]
     png_name = png[1]
-    layers[png_number] = "Indigo kart model\\Indigo kart/" + png_name
+    layers[png_number] = "Indigo kart model//Indigo kart/" + png_name
 
 kart_layers = pygame.sprite.LayeredUpdates()
 
@@ -75,12 +80,11 @@ def fps_counter():
     fps_rect = fps_text.get_rect(center=(70,50))
     SCREEN.blit(fps_text,fps_rect)
 Test_num = 0
+
 run = True
 while run:
     SCREEN.fill(DARK_GREY)
     clock.tick(TARGET_FPS)
-    fps_counter()
-
 
     Test_num +=0
 
@@ -99,32 +103,26 @@ while run:
         SCREEN.blit(kart_layer.surface,kart_layer.rect)
 
         if keys[pygame.K_w]:
-            kart_layer.move()
-            pass
+            kart_layer.move(foward=True)
+        elif keys[pygame.K_w] == False:
+            if kart_layer.velocity >= 0.5:
+                kart_layer.move(foward=True)
+                kart_layer.velocity -= 0.02
         if keys[pygame.K_s]:
+            kart_layer.move(backward=True)
             pass
         if keys[pygame.K_a]:
             kart_layer.rotate(left=True)
         if keys[pygame.K_d]:
             kart_layer.rotate(right=True)
-        
         if keys[pygame.K_LSHIFT]:
-            kart_layer.rotation_val = 1
+            kart_layer.rotation_val = 1.5
         else:
             kart_layer.rotation_val = 3
         
     
 
-
-
-
-
-
-
-
-
-
-        
+    fps_counter()
 
      
  

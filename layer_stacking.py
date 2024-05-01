@@ -10,7 +10,7 @@ DARK_GREY = (20,20,20)
 WHITE = (255,255,255)
 SCALE = 100
 TARGET_FPS = 60
-font = pygame.font.Font('fonts\ARIALBD 1.TTF',24)
+font = pygame.font.Font('fonts//ARIALBD 1.TTF',24)
 clock = pygame.time.Clock()
 START_Y = 400
 
@@ -34,14 +34,14 @@ class Kart_layer(pygame.sprite.Sprite):
 #C:\Users\ztdnz\Desktop\Code files\Kart shifters\Kart1
 #x = listdir("/Users/ztdnz/Desktop/Code files/Kart shifters/Kart1")
 
-layers = listdir((os.path.abspath('Indigo kart model\\Indigo kart').replace("\\","/").removeprefix("C:").removesuffix("/Kart shifters")))
+layers = listdir((os.path.abspath('Indigo kart model//Indigo kart').replace("\\","/").removeprefix("C:").removesuffix("/Kart shifters")))
 layers.sort(reverse=False)
 print(layers)
 
 for png in enumerate(layers):
     png_number = png[0]
     png_name = png[1]
-    layers[png_number] = "Indigo kart model\\Indigo kart/" + png_name
+    layers[png_number] = "Indigo kart model//Indigo kart/" + png_name
 
 kart_layers = pygame.sprite.LayeredUpdates()
 
@@ -64,7 +64,7 @@ while run:
 
  
 
-    Test_num +=0
+    Test_num +=1
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

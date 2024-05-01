@@ -17,7 +17,7 @@ screen = pygame.display.set_mode((SW,SH))
 class Fps:
     def get_fps():
         pygame.font.init()
-        font = pygame.font.Font('fonts\ARIALBD 1.TTF',24 )
+        font = pygame.font.Font('fonts/ARIALBD 1.TTF',24 )
         fps = int(clock.get_fps())
         fps_text = font.render('Fps: '+str(fps),True,WHITE)
         fps_rect = fps_text.get_rect(center=(50,20))
@@ -27,9 +27,9 @@ class Fps:
 class Kart(pygame.sprite.Sprite):
     def __init__(self,rotation_val):
         super(Kart,self).__init__()
-        self.image = pygame.transform.smoothscale(pygame.image.load('Indigo kart model\sprite_01.png').convert_alpha(),(100,100))
+        self.image = pygame.transform.smoothscale(pygame.image.load('Indigo kart model/sprite_01.png').convert_alpha(),(100,100))
         self.surf = self.image 
-        self.layers = listdir("Indigo kart model\Indigo kart")
+        self.layers = listdir("Indigo kart model/Indigo kart")
         self.angle = 0
         self.surf = pygame.transform.rotate(self.image,self.angle)
         self.rect = self.surf.get_rect(center=(self.surf.get_width()/2,self.surf.get_height()/2))
@@ -102,7 +102,7 @@ class Kart(pygame.sprite.Sprite):
            
 kart1 = Kart(3)  #sprite 
 
-layers = listdir('Indigo kart model\Indigo kart')
+layers = listdir('Indigo kart model/Indigo kart')
 
 
 
