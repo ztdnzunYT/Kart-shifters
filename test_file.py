@@ -4,7 +4,7 @@ pygame.font.init()
 import os 
 from os import *
 
-SCREEN = pygame.display.set_mode((650,650),vsync=1)
+SCREEN = pygame.display.set_mode((750,750),vsync=1)
 pygame.display.set_caption("Sprite stacking")
 DARK_GREY = (20,20,20)
 WHITE = (255,255,255)
@@ -26,9 +26,13 @@ class Kart_layer(pygame.sprite.Sprite):
         self.angle = 90
         self.velocity = 0.5
         self.rotation_val = 3
+        self.max_rotation = 3
         self.acceleration = 0.008
         self.image = pygame.transform.rotate(self.image,self.angle)
         self.surface = pygame.transform.rotate(self.image,self.angle)
+        self.drift_val = 0
+        self.drift_max = 50
+    
       
     def rotate(self,left=False,right=False):
         if self.velocity > 0.6:
@@ -36,9 +40,19 @@ class Kart_layer(pygame.sprite.Sprite):
                 self.angle += self.rotation_val
             if right:
                 self.angle += -self.rotation_val
-        self.surface = pygame.transform.rotate(self.image,self.angle)
+
+        if keys[pygame.K_LSHIFT] == False:
+            if self.drift_val > 0:
+                self.drift_val -=2.5
+            elif self.drift_val < 0:
+                self.drift_val +=2.5
+            print(self.drift_val)
+            self.surface = pygame.transform.rotate(self.image,self.angle - self.drift_val)
+        else:
+            self.surface = pygame.transform.rotate(self.image,self.angle - self.drift_val)
         self.rect = self.surface.get_rect(center=(self.rect.center))
         self.angle = self.angle % 360
+
 
     def move(self,foward=False,backward=False):
         radians = math.radians(self.angle)
@@ -50,10 +64,21 @@ class Kart_layer(pygame.sprite.Sprite):
             self.rect.y -= vertical 
     
     def brake(self):
-        pass
-
-        
-        
+        if self.velocity > .5 :
+            self.velocity -=.02
+    
+    def drift(self):
+        self.rotation_val = 1.5
+        if self.drift_val > -self.drift_max:
+            if keys[pygame.K_a]: 
+                self.drift_val -=1
+        if self.drift_val < self.drift_max:
+            if keys[pygame.K_d]:
+                self.drift_val +=1
+        print(self.drift_val)
+        return self.drift_val
+   
+    
 #C:\Users\ztdnz\Desktop\Code files\Kart shifters\Kart1
 #x = listdir("/Users/ztdnz/Desktop/Code files/Kart shifters/Kart1")
 
@@ -109,17 +134,18 @@ while run:
                 kart_layer.move(foward=True)
                 kart_layer.velocity -= 0.02
         if keys[pygame.K_s]:
-            kart_layer.move(backward=True)
-            pass
+            kart_layer.brake()
         if keys[pygame.K_a]:
             kart_layer.rotate(left=True)
         if keys[pygame.K_d]:
             kart_layer.rotate(right=True)
         if keys[pygame.K_LSHIFT]:
-            kart_layer.rotation_val = 1.5
+            kart_layer.drift()
         else:
-            kart_layer.rotation_val = 3
+            if kart_layer.rotation_val < kart_layer.max_rotation:
+                kart_layer.rotation_val += 0.5
         
+
     
 
     fps_counter()
