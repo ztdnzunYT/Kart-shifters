@@ -67,7 +67,7 @@ class Kart_layer(pygame.sprite.Sprite):
         if self.velocity > .5 :
             self.velocity -=.02
     
-    def drift(self):
+    def drift(self):  #add velocity changing over time of drift  
         self.rotation_val = 1.5
         if self.drift_val > -self.drift_max:
             if keys[pygame.K_a]: 
