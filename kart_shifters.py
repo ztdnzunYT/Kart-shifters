@@ -5,6 +5,9 @@ from pygame.locals import (K_LEFT, K_RIGHT)
 # Pygame initialization
 pygame.init()
 
+
+#new 
+
 screen = pygame.display.set_mode((800,800))
 pygame.display.set_caption("Kart Shifters")
 # Class for creating test object
