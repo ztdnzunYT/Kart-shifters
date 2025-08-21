@@ -92,7 +92,7 @@ class Kart_layer(pygame.sprite.Sprite):
 #C:\Users\ztdnz\Desktop\Code files\Kart shifters\Kart1
 #x = listdir("/Users/ztdnz/Desktop/Code files/Kart shifters/Kart1")
 
-kart_model = str('red kart model\\red kart images')
+kart_model = str('emotobike model\\emotobike')
 layers = listdir(kart_model)
 
 
@@ -120,9 +120,9 @@ Test_num = 0
 
 run = True
 while run:
-    SCREEN.fill(GRASS_COLOR)
+    SCREEN.fill(DARK_GREY)
     clock.tick(TARGET_FPS)
-    SCREEN.blit(parking_lot,parking_lot_rect)
+    #SCREEN.blit(parking_lot,parking_lot_rect)
 
 
     Test_num +=0

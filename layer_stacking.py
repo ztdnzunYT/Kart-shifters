@@ -4,16 +4,15 @@ pygame.font.init()
 import os 
 from os import *
 
-SCREEN = pygame.display.set_mode((800,800),vsync=1)
+SCREEN = pygame.display.set_mode((800,800),vsync=False)
 pygame.display.set_caption("Sprite stacking")
 DARK_GREY = (20,20,20)
 WHITE = (255,255,255)
-SCALE = 100
+SCALE = 300
 TARGET_FPS = 60
 font = pygame.font.Font('fonts//ARIALBD 1.TTF',24)
 clock = pygame.time.Clock()
 START_Y = 400
-
 
 class Kart_layer(pygame.sprite.Sprite):
     def __init__(self,image,spacing):
@@ -34,14 +33,14 @@ class Kart_layer(pygame.sprite.Sprite):
 #C:\Users\ztdnz\Desktop\Code files\Kart shifters\Kart1
 #x = listdir("/Users/ztdnz/Desktop/Code files/Kart shifters/Kart1")
 
-layers = listdir((os.path.abspath('Indigo kart model//Indigo kart').replace("\\","/").removeprefix("C:").removesuffix("/Kart shifters")))
+layers = listdir((os.path.abspath('emotobike model\\emotobike').replace("\\","/").removeprefix("C:").removesuffix("/Kart shifters")))
 layers.sort(reverse=False)
 print(layers)
 
 for png in enumerate(layers):
     png_number = png[0]
     png_name = png[1]
-    layers[png_number] = "Indigo kart model//Indigo kart/" + png_name
+    layers[png_number] = "emotobike model//emotobike/" + png_name
 
 kart_layers = pygame.sprite.LayeredUpdates()
 
@@ -55,14 +54,17 @@ def fps_counter():
     fps_text = font.render((str("Fps: ")+ str(fps)) , True, pygame.Color(WHITE))
     fps_rect = fps_text.get_rect(center=(70,50))
     SCREEN.blit(fps_text,fps_rect)
+
+
 Test_num = 0
+
 run = True
+
+
 while run:
     SCREEN.fill(DARK_GREY)
     clock.tick(TARGET_FPS)
     fps_counter()
-
- 
 
     Test_num +=1
 
