@@ -7,9 +7,10 @@ from os import *
 SCREEN = pygame.display.set_mode((750,750),vsync=1)
 pygame.display.set_caption("Sprite stacking")
 DARK_GREY = (20,20,20)
+LIGHTGRAY = (115,115,115)
 WHITE = (255,255,255)
 GRASS_COLOR = (97,137,55) 
-SCALE = 100
+SCALE = 50
 TARGET_FPS = 60
 font = pygame.font.Font('fonts/ARIALBD 1.TTF',24)
 clock = pygame.time.Clock()
@@ -20,7 +21,6 @@ parking_lot = pygame.transform.smoothscale(pygame.image.load('basic map\sprite_0
 parking_lot_rect = parking_lot.get_rect(center=(parking_lot.get_width()/2,parking_lot.get_height()/2))
 parking_lot_rect.center = (SCREEN.get_width()/2,SCREEN.get_height()/2)
 parking_lot_rect.x = 0
-
 
 
 class Kart_layer(pygame.sprite.Sprite):
@@ -45,10 +45,11 @@ class Kart_layer(pygame.sprite.Sprite):
       
     def rotate(self,left=False,right=False):
         if self.velocity > 0.6 and keys[pygame.K_w]:
-            if left: 
-                self.angle += self.rotation_val
-            if right:
-                self.angle += -self.rotation_val
+            pass
+        if left: 
+            self.angle += self.rotation_val
+        if right:
+            self.angle += -self.rotation_val
 
         if keys[pygame.K_LSHIFT] == False:
             if self.drift_val > 0:
@@ -98,7 +99,6 @@ layers = listdir(kart_model)
 
 layers.sort(reverse=False)
 print(layers)
-
 for png in enumerate(layers):
     png_number = png[0]
     png_name = png[1]
@@ -120,7 +120,7 @@ Test_num = 0
 
 run = True
 while run:
-    SCREEN.fill(DARK_GREY)
+    SCREEN.fill(LIGHTGRAY)
     clock.tick(TARGET_FPS)
     #SCREEN.blit(parking_lot,parking_lot_rect)
 
@@ -132,7 +132,7 @@ while run:
             run = False
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                run = False
+                run = False 
 
     keys = pygame.key.get_pressed()
 

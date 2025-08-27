@@ -4,7 +4,7 @@ pygame.font.init()
 import os 
 from os import *
 
-SCREEN = pygame.display.set_mode((800,800),vsync=False)
+SCREEN = pygame.display.set_mode((800,800),vsync=True)
 pygame.display.set_caption("Sprite stacking")
 DARK_GREY = (20,20,20)
 WHITE = (255,255,255)
