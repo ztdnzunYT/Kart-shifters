@@ -23,6 +23,7 @@ parking_lot_rect.center = (SCREEN.get_width()/2,SCREEN.get_height()/2)
 parking_lot_rect.x = 0
 
 
+
 class Kart_layer(pygame.sprite.Sprite):
     def __init__(self,image,spacing):
         super(Kart_layer,self).__init__()
@@ -88,8 +89,8 @@ class Kart_layer(pygame.sprite.Sprite):
             if keys[pygame.K_d]:
                 self.drift_val +=1
         return self.drift_val
-   
     
+
 #C:\Users\ztdnz\Desktop\Code files\Kart shifters\Kart1
 #x = listdir("/Users/ztdnz/Desktop/Code files/Kart shifters/Kart1")
 
@@ -102,7 +103,7 @@ print(layers)
 for png in enumerate(layers):
     png_number = png[0]
     png_name = png[1]
-    layers[png_number] = kart_model + "/" + png_name
+    layers[png_number] = kart_model + "/" + png_name 
 
 kart_layers = pygame.sprite.LayeredUpdates()
 
@@ -161,11 +162,6 @@ while run:
         
         print(f"{kart_layer.velocity:.3f}")
 
-
-        
-
-
-     
 
     fps_counter()
 
