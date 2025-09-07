@@ -27,18 +27,24 @@ class LoadingScreen:
     class ParallaxSquare():
 
         def __init__(self,x,y,image):
-            self.x = x 
+            self.x = x
             self.y = y
-            self.image = pygame.image.load(image).convert_alpha()
+            self.image = pygame.transform.smoothscale((pygame.image.load(image).convert_alpha()),(200,200))
             self.rect = self.image.get_rect()
 
     
-    parallax_square = ParallaxSquare( 0,0,"assets\\Passing lane background scroll.png")
+    parallax_square = ParallaxSquare(0,0,"assets//Passing lane background scroll.png")
+
 
 class MainMenu:
 
-    def __init__():
+
+    def playBackgroundDisplay():
         pass
+
+
+print(LoadingScreen.parallax_square.rect.size)
+
 
 
 
@@ -62,20 +68,13 @@ for x in range(10): LoadingScreen.parallax_squares.append(LoadingScreen.parallax
 
 
 
-for squre in LoadingScreen.parallax_squares:
-    print(squre)
-
-
-
-
-
 run = True
 while run:
     SCREEN.fill(Globals.BLACK_COLOR)
     clock.tick(Globals.TARGET_FPS)
     #SCREEN.blit(parking_lot,parking_lot_rect)
 
-
+    SCREEN.blit(LoadingScreen.parallax_square.image,LoadingScreen.parallax_square.rect)
 
 
 
