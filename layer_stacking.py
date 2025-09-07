@@ -80,7 +80,7 @@ while run:
         SCREEN.blit(rotated_layer.surface,rotated_layer.rect)
         rotated_layer.angle -= .5
         rotated_layer.rotate() 
-        rotated_layer.rect.y = rotated_layer.rect.y - (math.sin(math.radians(Test_num)%SCALE)) * (layer[0]/1.9)
+        #rotated_layer.rect.y = rotated_layer.rect.y - (math.sin(math.radians(Test_num)%SCALE)) * (layer[0]/1.9)
 
         keys = pygame.key.get_pressed()
      
