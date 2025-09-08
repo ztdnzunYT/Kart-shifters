@@ -14,42 +14,53 @@ clock = pygame.time.Clock()
 class Globals:
     
     SCALE = 50
-    TARGET_FPS = 120
+    TARGET_FPS = 30
     START_Y = 400
     WHITE_COLOR = (255,255,255)
     BLACK_COLOR = (0,0,0)
     GAME_STATE = "Loading_screen"
+    delta_time = clock.get_time() / 1000
 
 class LoadingScreen:
 
+    NUM_OF_SQUARES = 15 
     parallax_squares = []
 
     class ParallaxSquare():
 
-        def __init__(self,x,y,image):
-            self.x = x
-            self.y = y
+        def __init__(self,start_x,start_y,image):
+            self.start_x = start_x
+            self.start_y = start_y
             self.image = pygame.transform.smoothscale((pygame.image.load(image).convert_alpha()),(200,200))
-            self.rect = self.image.get_rect()
-
-    
-    parallax_square = ParallaxSquare(0,0,"assets//Passing lane background scroll.png")
+            self.rect = self.image.get_rect(topleft=(start_x,start_y))
 
 
 class MainMenu:
 
+    for i in range(5):
+        for j in range(4):
+            new_square = LoadingScreen.ParallaxSquare((i*200)-200,(j*200)-200,"assets//Passing lane background scroll.png")
+            LoadingScreen.parallax_squares.append(new_square)
+
+
+
+    print(LoadingScreen.parallax_squares)
+
+    def drawBackgroundDisplay():
+        for square in LoadingScreen.parallax_squares:
+            SCREEN.blit(square.image,square.rect)
 
     def playBackgroundDisplay():
-        pass
+        for square in LoadingScreen.parallax_squares:
+            if square.rect.x > SCREEN_WIDTH:
+                square.rect.x = -200
+            else:
+                square.rect.x += 1
 
-
-print(LoadingScreen.parallax_square.rect.size)
-
-
-
-
-
-
+            if square.rect.y > SCREEN_HEIGHT:
+                square.rect.y = -200
+            else:
+                square.rect.y +=1
 
 
 
@@ -62,7 +73,7 @@ def fps_counter():
     fps_rect = fps_text.get_rect(center=(70,50))
     SCREEN.blit(fps_text,fps_rect)
  
-for x in range(10): LoadingScreen.parallax_squares.append(LoadingScreen.parallax_square)
+
 
 
 
@@ -74,21 +85,10 @@ while run:
     clock.tick(Globals.TARGET_FPS)
     #SCREEN.blit(parking_lot,parking_lot_rect)
 
-    SCREEN.blit(LoadingScreen.parallax_square.image,LoadingScreen.parallax_square.rect)
 
 
-
-
-
-
-
-
-
-
-  
-
-
-
+    MainMenu.drawBackgroundDisplay()
+    MainMenu.playBackgroundDisplay()
 
 
 
@@ -114,5 +114,4 @@ while run:
 
     
 pygame.quit()
-
 
