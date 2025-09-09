@@ -1,45 +1,49 @@
 import pygame
 
-# Initialize Pygame
 pygame.init()
 
 # Screen setup
 WIDTH, HEIGHT = 800, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Simple Movement Example")
+pygame.display.set_caption("Simple Acceleration Example")
 
-# Clock for controlling FPS
+# Clock for 120 FPS
 clock = pygame.time.Clock()
-FPS = 60
+FPS = 120
 
 # Object properties
-x = 100  # starting position
-y = HEIGHT // 2
-velocity = 5  # constant speed in pixels per frame
+x, y = 100, HEIGHT // 2
+vel_x = 0
+acc = 0.2   # acceleration per frame
+friction = 0.95  # slows object when no input
+size = 40
 
 running = True
 while running:
-    # Limit loop to 60 FPS
-    clock.tick(FPS)
+    dt = clock.tick(FPS)  # keep FPS at 120
+    screen.fill((30, 30, 30))
 
+    # Events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
+    keys = pygame.key.get_pressed()
+
+    # Apply acceleration
+    if keys[pygame.K_RIGHT]:
+        vel_x += acc
+    elif keys[pygame.K_LEFT]:
+        vel_x -= acc
+    else:
+        vel_x *= friction  # apply friction when no input
+
     # Update position
-    x += velocity
+    x += vel_x
 
-    # Wrap around screen
-    if x > WIDTH:
-        x = -50  # reset to left side
+    # Draw rectangle
+    pygame.draw.rect(screen, (0, 200, 255), (x, y, size, size))
 
-    # Clear screen
-    screen.fill((30, 30, 30))
-
-    # Draw moving rectangle
-    pygame.draw.rect(screen, (255, 100, 0), (int(x), int(y), 50, 50))
-
-    # Update display
     pygame.display.flip()
 
 pygame.quit()

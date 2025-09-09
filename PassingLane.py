@@ -14,7 +14,7 @@ clock = pygame.time.Clock()
 class Globals:
     
     SCALE = 50
-    TARGET_FPS = 30
+    TARGET_FPS = 60
     START_Y = 400
     WHITE_COLOR = (255,255,255)
     BLACK_COLOR = (0,0,0)
