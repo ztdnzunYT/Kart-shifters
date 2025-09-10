@@ -36,6 +36,10 @@ class LoadingScreen:
             self.image = pygame.transform.smoothscale((pygame.image.load(image).convert_alpha()),(200,200))
             self.rect = self.image.get_rect(topleft=(start_x,start_y))
 
+
+
+
+
 class MainMenu:
     
     @staticmethod
@@ -54,6 +58,7 @@ class MainMenu:
     def playBackgroundDisplay():
         current_time = pygame.time.get_ticks()
 
+
         if current_time > LoadingScreen.time:
             
             for square in LoadingScreen.parallax_squares:
@@ -69,6 +74,13 @@ class MainMenu:
 
             LoadingScreen.time = current_time + LoadingScreen.TIME_DELAY
 
+
+
+
+
+
+
+
 def fps_counter():
     fps = str(int(clock.get_fps()))
     fps_text = font.render((str("Fps: ")+ str(fps)) , True, pygame.Color(Globals.WHITE_COLOR))
@@ -76,8 +88,9 @@ def fps_counter():
     SCREEN.blit(fps_text,fps_rect)
  
 
-
-
+passing_lane_coverart_png = pygame.transform.smoothscale(pygame.image.load("assets//cover_art.png").convert_alpha(),(700/1.2,400/1.2)) 
+passing_lane_cover_rect = passing_lane_coverart_png.get_rect(center=(passing_lane_coverart_png.get_size()[0]/2,passing_lane_coverart_png.get_size()[1]/2))
+passing_lane_cover_rect.center = (SCREEN_WIDTH/2+10,SCREEN_HEIGHT/2)
 
 
 
@@ -89,6 +102,9 @@ while run:
     if Globals.GAME_STATE == "loading_screen":
         MainMenu.drawBackgroundDisplay()
         MainMenu.playBackgroundDisplay()
+        SCREEN.blit(passing_lane_coverart_png,(passing_lane_cover_rect))
+        passing_lane_cover_rect.y = 10 * math.sin((math.pi * .5 * pygame.time.get_ticks()/1000)) + 100
+
 
 
     for event in pygame.event.get():
