@@ -1,14 +1,15 @@
 import pygame  #may need to use pip install pygame
 import math
 pygame.font.init()
+pygame.mixer.init()
 from os import *
 
 SCREEN_WIDTH = 750
 SCREEN_HEIGHT = 500
 SCREEN = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT),vsync=1)
-pygame.display.set_caption("Sprite stacking")
+pygame.display.set_caption("PassingLane")
 
-font = pygame.font.Font('fonts/ARIALBD 1.TTF',24)
+font = pygame.font.Font('fonts\\lightsideracad.ttf',24)
 clock = pygame.time.Clock()
 
 class Globals:
@@ -19,6 +20,7 @@ class Globals:
     WHITE_COLOR = (255,255,255)
     BLACK_COLOR = (0,0,0)
     GAME_STATE = "loading_screen"
+    GAME_STATES = ["loading_screen","main_menu"]
     delta_time = clock.get_time() / 1000
     input_device = "pc"
 
@@ -28,6 +30,8 @@ class LoadingScreen:
     TIME_DELAY = 25
     time = pygame.time.get_ticks()
     parallax_squares = []
+    transition = False
+    transition_amount = 255
 
     class ParallaxSquare():
 
@@ -36,11 +40,33 @@ class LoadingScreen:
             self.start_y = start_y
             self.image = pygame.transform.smoothscale((pygame.image.load(image).convert_alpha()),(200,200))
             self.rect = self.image.get_rect(topleft=(start_x,start_y))
+            self.transparency = 255
 
+    def checkTransitionGameState():
+        if LoadingScreen.transition == True:
+            LoadingScreen.transition_amount = max(LoadingScreen.transition_amount-3,0)
+        if LoadingScreen.transition_amount <=0:
+            LoadingScreen.transition == False
+            Globals.GAME_STATE = "main_menu"
+ 
+        #print(LoadingScreen.transition,Globals.GAME_STATE)
 
+class StartUpScreen:
 
-class MainMenu:
-    
+    passing_lane_coverart_png = pygame.transform.smoothscale(pygame.image.load("assets//cover_art.png").convert_alpha(),(700/1.2,400/1.2)) 
+    passing_lane_cover_rect = passing_lane_coverart_png.get_rect(center=(passing_lane_coverart_png.get_size()[0]/2,passing_lane_coverart_png.get_size()[1]/2))
+    passing_lane_cover_rect.x  = 100
+    passing_lane_cover_velocity = -6
+
+    if Globals.input_device == "pc":
+            text = "space"
+    elif Globals.input_device == "controller":
+        text = "x"
+
+    play_text = font.render((f"Press {text} to start"),True, pygame.Color(255,255,255,))
+    play_rect = play_text.get_rect(center=(SCREEN_WIDTH/2,SCREEN_HEIGHT/2+50))
+    play_rect_transparency = 255
+
     @staticmethod
     def CreateSquares():
         for i in range(5):
@@ -52,6 +78,11 @@ class MainMenu:
 
     def drawBackgroundDisplay():
         for square in LoadingScreen.parallax_squares:
+            square.image.set_alpha(square.transparency)
+            if LoadingScreen.transition == True:
+                square.transparency = max(square.transparency-4,0)
+                
+
             SCREEN.blit(square.image,square.rect)
 
     def playBackgroundDisplay():
@@ -60,41 +91,163 @@ class MainMenu:
         if current_time > LoadingScreen.time:
             
             for square in LoadingScreen.parallax_squares:
-                if square.rect.x > SCREEN_WIDTH:
+                if square.rect.x > SCREEN_WIDTH+48:
                     square.rect.x = -200
                 else:
                     square.rect.x += 1
 
-                if square.rect.y > SCREEN_HEIGHT:
+                if square.rect.y > SCREEN_HEIGHT+98:
                     square.rect.y = -200
                 else:
                     square.rect.y +=1
 
             LoadingScreen.time = current_time + LoadingScreen.TIME_DELAY
 
-    def draw_logo():
+    def drawStartupLogo():
 
-        passing_lane_coverart_png = pygame.transform.smoothscale(pygame.image.load("assets//cover_art.png").convert_alpha(),(700/1.2,400/1.2)) 
-        passing_lane_cover_rect = passing_lane_coverart_png.get_rect(center=(passing_lane_coverart_png.get_size()[0]/2,passing_lane_coverart_png.get_size()[1]/2))
-        passing_lane_cover_rect.center = (SCREEN_WIDTH/2+10,SCREEN_HEIGHT/2)
-
-        passing_lane_cover_rect.y = 10 * math.sin((math.pi * .5 * pygame.time.get_ticks()/1000)) + 85
-        SCREEN.blit(passing_lane_coverart_png,(passing_lane_cover_rect))
+        if LoadingScreen.transition == False:
+          StartUpScreen.passing_lane_cover_rect.y = 10 * math.sin((math.pi * .5 * pygame.time.get_ticks()/1000)) + 85
         
-    def draw_play_button():
-        if Globals.input_device == "pc":
-            text = "space"
-        elif Globals.input_device == "controller":
-            text = "x"
+        if LoadingScreen.transition == True:
+            StartUpScreen.passing_lane_cover_velocity +=.5
+            if StartUpScreen.passing_lane_cover_rect.y > -250:
+                StartUpScreen.passing_lane_cover_rect.y -= StartUpScreen.passing_lane_cover_velocity
+        
+        SCREEN.blit(StartUpScreen.passing_lane_coverart_png,(StartUpScreen.passing_lane_cover_rect))
+        
+    def drawPlayButton():
+        StartUpScreen.play_rect.y = 5 * math.sin((math.pi * .5 * pygame.time.get_ticks()/1000)) + 310
+        if LoadingScreen.transition == False:
+            transparency = (int(abs(230 * math.sin((math.pi*.1*pygame.time.get_ticks()/1000)))))
+            StartUpScreen.play_text.set_alpha(transparency)
+            StartUpScreen.play_rect_transparency = transparency
+        else:
+            StartUpScreen.play_rect_transparency = max(StartUpScreen.play_rect_transparency-3,0)
+            StartUpScreen.play_text.set_alpha(StartUpScreen.play_rect_transparency)
+        
+        SCREEN.blit(StartUpScreen.play_text,StartUpScreen.play_rect)
 
-        play_text = font.render((f"Press {text} to start"),True, pygame.Color(255,255,255,))
-        play_rect = play_text.get_rect(center=(SCREEN_WIDTH/2,SCREEN_HEIGHT/2+50))
+class MainMenu: 
 
-        play_rect.y = 5 * math.sin((math.pi * .5 * pygame.time.get_ticks()/1000)) + 310
-        transparency = (int(abs(230 * math.sin((math.pi*.1*pygame.time.get_ticks()/1000)))))
-        play_text.set_alpha(transparency)
-        SCREEN.blit(play_text,play_rect)
- 
+    class SideMenu:
+        menu_options_text = ["Cruise","Garage","Compete","Settings"]
+        menu_options = []
+        selected_option = 0
+        options_offset = 70
+        options_x_end = 40
+        
+
+        actions = {
+            pygame.K_w: lambda: MainMenu.SideMenu.getSelectedOption("up"),
+            pygame.K_s: lambda: MainMenu.SideMenu.getSelectedOption("down")
+        }
+
+        def getSelectedOption(direction):
+
+            if direction == "up":
+                MainMenu.SideMenu.selected_option -=1 
+
+                if MainMenu.SideMenu.selected_option < 0: 
+                    MainMenu.SideMenu.selected_option = len(MainMenu.SideMenu.menu_options_text) -1
+
+            if direction == "down": 
+                MainMenu.SideMenu.selected_option +=1
+
+                if MainMenu.SideMenu.selected_option > len(MainMenu.SideMenu.menu_options_text) -1:
+                    MainMenu.SideMenu.selected_option = 0
+
+                
+        def drawMenuOptions():
+
+            for option in enumerate(MainMenu.SideMenu.menu_options) :
+
+                index = option[0]
+                sidemenu_option = option[1]
+
+               
+                sidemenu_option.y = sidemenu_option.start_y + index * MainMenu.SideMenu.options_offset
+                sidemenu_option.rect.y = sidemenu_option.y
+
+                if sidemenu_option.rect.x < MainMenu.SideMenu.options_x_end + index *10 and Globals.GAME_STATE == "main_menu":
+                    sidemenu_option.slide_velocity +=1
+                    sidemenu_option.rect.x = min(sidemenu_option.rect.x + sidemenu_option.slide_velocity,MainMenu.SideMenu.options_x_end + index * 3) 
+
+                sidemenu_option.transparency = sidemenu_option.text.get_alpha()
+            
+                if sidemenu_option.label == MainMenu.SideMenu.menu_options_text[MainMenu.SideMenu.selected_option]:
+                    sidemenu_option.text.set_alpha(min(sidemenu_option.transparency+10,255))
+                    sidemenu_option.y = sidemenu_option.y + 3 * math.sin(2*math.pi*.8*pygame.time.get_ticks()/1000)
+                    sidemenu_option.rect.y = sidemenu_option.y
+                else:
+                    sidemenu_option.text.set_alpha(max(sidemenu_option.transparency-10,sidemenu_option.set_transparency))
+
+                SCREEN.blit(sidemenu_option.text,sidemenu_option.rect)
+
+
+
+
+    class SideMenuOption:
+        text_size = 30
+
+        def __init__(self,x,y,text,size):
+            self.x = x
+            self.y = y 
+            self.start_y = y
+            self.size = size
+            self.slide_velocity = .8
+            self.font = pygame.font.Font('fonts\\lightsider.ttf',self.size)
+            self.label = text
+            self.text = self.font.render(text,True,(255,255,255))
+            self.rect = self.text.get_rect(topleft=(x,y))
+            self.set_transparency = 150
+            self.transparency = 255
+    
+    for option in SideMenu.menu_options_text:
+        SideMenu.menu_options.append(SideMenuOption(-200,40,str(option),SideMenuOption.text_size))
+
+    class SoundEffects():
+        pygame.mixer.set_num_channels(8)
+
+
+class CrusieGameMode:
+    class player:
+
+        def __init__(self,x,y,image,name,top_speed,acceleration,brake):
+            self.x = x 
+            self.y = y
+            self.pos_x = 0
+            self.pos_y = 0
+            self.image = image
+            self.rect = self.image.get_rect()
+            self.speed = 0
+            self.top_speed = 0
+            self.acceleration = acceleration
+            self.x_vel = 0
+            self.y_vel = 0 
+            self.brake = brake
+            self.angle = 0
+            
+
+        
+            pass
+
+
+
+
+
+
+
+
+    class Road:
+        pass
+
+        def drawRoad():
+            pass
+
+
+
+
+
 
 def fps_counter():
     fps = str(int(clock.get_fps()))
@@ -108,12 +261,17 @@ while run:
     SCREEN.fill(Globals.BLACK_COLOR)
     clock.tick(Globals.TARGET_FPS)
 
-    if Globals.GAME_STATE == "loading_screen":
-        MainMenu.drawBackgroundDisplay()
-        MainMenu.playBackgroundDisplay()
-        MainMenu.draw_logo()
-        MainMenu.draw_play_button()
+    LoadingScreen.checkTransitionGameState()
 
+    if Globals.GAME_STATE == "loading_screen":
+        StartUpScreen.drawBackgroundDisplay()
+        StartUpScreen.playBackgroundDisplay()
+        StartUpScreen.drawPlayButton()
+        StartUpScreen.drawStartupLogo()
+    
+
+    if Globals.GAME_STATE == "main_menu":
+        MainMenu.SideMenu.drawMenuOptions()
 
 
     keys = pygame.key.get_pressed()
@@ -127,16 +285,16 @@ while run:
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-                print("key space preseed")
-
+                LoadingScreen.transition = True
+            
+            if Globals.GAME_STATE == "main_menu":
+                if event.key in MainMenu.SideMenu.actions:
+                    MainMenu.SideMenu.actions[event.key]()
+             
 
 
     keys = pygame.key.get_pressed()
     fps_counter()
-
-     
- 
-  
 
     pygame.display.update()
 
