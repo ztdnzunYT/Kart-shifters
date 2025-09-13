@@ -2,9 +2,10 @@ import pygame  #may need to use pip install pygame
 import math
 pygame.font.init()
 pygame.mixer.init()
+import random
 from os import *
 
-SCREEN_WIDTH = 750
+SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 500
 SCREEN = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT),vsync=1)
 pygame.display.set_caption("PassingLane")
@@ -18,9 +19,9 @@ class Globals:
     TARGET_FPS = 60
     START_Y = 400
     WHITE_COLOR = (255,255,255)
-    BLACK_COLOR = (0,0,0)
+    BLACK_COLOR = (0,0,0) 
+    GAME_STATES = ["loading_screen","main_menu","test_scale"]
     GAME_STATE = "loading_screen"
-    GAME_STATES = ["loading_screen","main_menu"]
     delta_time = clock.get_time() / 1000
     input_device = "pc"
 
@@ -55,7 +56,7 @@ class StartUpScreen:
 
     passing_lane_coverart_png = pygame.transform.smoothscale(pygame.image.load("assets//cover_art.png").convert_alpha(),(700/1.2,400/1.2)) 
     passing_lane_cover_rect = passing_lane_coverart_png.get_rect(center=(passing_lane_coverart_png.get_size()[0]/2,passing_lane_coverart_png.get_size()[1]/2))
-    passing_lane_cover_rect.x  = 100
+    passing_lane_cover_rect.x  = SCREEN_WIDTH/2 - passing_lane_cover_rect.size[0]/2.05
     passing_lane_cover_velocity = -6
 
     if Globals.input_device == "pc":
@@ -69,9 +70,9 @@ class StartUpScreen:
 
     @staticmethod
     def CreateSquares():
-        for i in range(5):
+        for i in range(6):
             for j in range(4):
-                new_square = LoadingScreen.ParallaxSquare((i*200)-200,(j*200)-200,"assets//Passing lane background scroll.png")
+                new_square = LoadingScreen.ParallaxSquare((i*200)-350,(j*200)-200,"assets//Passing lane background scroll.png")
                 LoadingScreen.parallax_squares.append(new_square)
 
     CreateSquares()
@@ -92,7 +93,7 @@ class StartUpScreen:
             
             for square in LoadingScreen.parallax_squares:
                 if square.rect.x > SCREEN_WIDTH+48:
-                    square.rect.x = -200
+                    square.rect.x = -350
                 else:
                     square.rect.x += 1
 
@@ -176,7 +177,7 @@ class MainMenu:
             
                 if sidemenu_option.label == MainMenu.SideMenu.menu_options_text[MainMenu.SideMenu.selected_option]:
                     sidemenu_option.text.set_alpha(min(sidemenu_option.transparency+10,255))
-                    sidemenu_option.y = sidemenu_option.y + 3 * math.sin(2*math.pi*.8*pygame.time.get_ticks()/1000)
+                    sidemenu_option.y = sidemenu_option.y + 3 * math.sin(2*math.pi*.8*pygame.time.get_ticks()/1500)
                     sidemenu_option.rect.y = sidemenu_option.y
                 else:
                     sidemenu_option.text.set_alpha(max(sidemenu_option.transparency-10,sidemenu_option.set_transparency))
@@ -210,33 +211,38 @@ class MainMenu:
 
 
 class CrusieGameMode:
-    class player:
 
-        def __init__(self,x,y,image,name,top_speed,acceleration,brake):
+
+    class Player:
+        def __init__(self,x,y,image,layers,name,top_speed,handling,acceleration,brake):
             self.x = x 
             self.y = y
             self.pos_x = 0
             self.pos_y = 0
+            self.layers = layers
             self.image = image
+            self.surface = pygame.image.load(self.image).convert_alpha()
+            self.angle = 0
+            self.rotated_surface = None
             self.rect = self.image.get_rect()
             self.speed = 0
-            self.top_speed = 0
+            self.name = name 
+            self.top_speed = top_speed
+            self.handling = handling 
             self.acceleration = acceleration
+            self.brake = brake
+            self.health = 0
             self.x_vel = 0
             self.y_vel = 0 
-            self.brake = brake
-            self.angle = 0
-            
-
         
-            pass
 
+    def drawPlayerBoundingUi():
+        pygame.draw.rect(CrusieGameMode.playerBoundingSurface,(255,0,0),CrusieGameMode.playerBoundingBox,1)
+        SCREEN.blit(CrusieGameMode.playerBoundingSurface,(SCREEN_WIDTH/1.2-CrusieGameMode.playerBoundingBox.size[0],SCREEN_HEIGHT/3))
 
-
-
-
-
-
+    playerBoundingSurface = pygame.Surface((SCREEN_WIDTH,SCREEN_HEIGHT),pygame.SRCALPHA)
+    playerBoundingSurface.fill((255,255,255,0))
+    playerBoundingBox = pygame.Rect(0,0,SCREEN_WIDTH/1.5,SCREEN_HEIGHT/2)
 
     class Road:
         pass
@@ -244,7 +250,71 @@ class CrusieGameMode:
         def drawRoad():
             pass
 
+class TestScale:
 
+    class Camera:
+        actions = {
+            pygame.K_w: lambda: TestScale.cameraScale("up"),
+            pygame.K_s: lambda: TestScale.cameraScale("down")
+        }
+
+        startScale = 1
+        globalScale = 0
+        globalScaleMultipier = 2.5
+
+    class MyRect:
+
+        def __init__(self,x,y,width,height,color):
+            self.x = x 
+            self.y = y 
+            self.start_x = self.x
+            self.start_y = self.y 
+            self.width = width 
+            self.height = height
+            self.rect = pygame.Rect(self.x,self.y,self.width,self.height)
+            self.color = color
+
+    class OtherRectangle:
+
+        def __init__(self,x,y,width,height,color):
+            self.x = x 
+            self.y = y 
+            self.start_x = self.x
+            self.start_y = self.y 
+            self.width = width 
+            self.height = height
+            self.rect = pygame.Rect(self.x,self.y,self.width,self.height)
+            self.color = color
+
+    def drawRects():
+        pygame.draw.rect(SCREEN,TestScale.myRect.color,TestScale.myRect.rect,1)
+        pygame.draw.rect(SCREEN,TestScale.otherRect1.color,TestScale.otherRect1.rect,1)
+
+    def cameraScale(scale_direction):
+
+        TestScale.Camera.globalScale +=1 if scale_direction == "up" else -1 if scale_direction == "down" else None #INCREASES CAMERA GLOBAL SCALE OF BUTTON PRESS UP OR DOWN 
+        xOrientationVal = -1 if TestScale.myRect.x > TestScale.otherRect1.x else 1 if TestScale.myRect.x < TestScale.otherRect1.x else 0 #DETERMINES WHAT SIDE THE RECTANGLE IS ON IN RELATION TO MYRECT
+        yOrientationVal = 1 if TestScale.myRect.y > TestScale.otherRect1.y else -1 if TestScale.myRect.y < TestScale.otherRect1.y else 0 #DETERMINES WHAT SIDE THE RECTANGLE IS ON IN RELATION TO MYRECT
+        
+        TestScale.otherRect1.x +=(TestScale.Camera.globalScaleMultipier*xOrientationVal) if scale_direction == "up" else (-TestScale.Camera.globalScaleMultipier*xOrientationVal) if scale_direction == "down" else None #ALLOWS THE OTHER RECTANGLES TO MOVE IN CERTAIN DIRECTION WITH SCALE IN ORIENTATION TO MY RECT 
+        TestScale.otherRect1.y +=(-TestScale.Camera.globalScaleMultipier*yOrientationVal) if scale_direction == "up" else (TestScale.Camera.globalScaleMultipier*yOrientationVal) if scale_direction == "down" else None #ALLOWS THE OTHER RECTANGLES TO MOVE IN CERTAIN DIRECTION WITH SCALE IN ORIENTATION TO MY RECT 
+
+        TestScale.myRect.rect = pygame.Rect(TestScale.myRect.x-TestScale.Camera.globalScale/2,
+                                            TestScale.myRect.y-TestScale.Camera.globalScale/2,
+                                            TestScale.myRect.width + TestScale.Camera.globalScale,
+                                            TestScale.myRect.height + TestScale.Camera.globalScale)
+
+        TestScale.otherRect1.rect = pygame.Rect(TestScale.otherRect1.x-TestScale.Camera.globalScale/2,
+                                            TestScale.otherRect1.y-TestScale.Camera.globalScale/2,
+                                            TestScale.otherRect1.width + TestScale.Camera.globalScale,
+                                            TestScale.otherRect1.height + TestScale.Camera.globalScale)
+
+
+    myRect = MyRect(SCREEN_WIDTH/2-25,SCREEN_HEIGHT/2+50,35,50,(255,255,255))
+    otherRect1 = OtherRectangle(600,SCREEN_HEIGHT/2+50,35,50,(255,255,255))
+
+
+        
 
 
 
@@ -261,17 +331,27 @@ while run:
     SCREEN.fill(Globals.BLACK_COLOR)
     clock.tick(Globals.TARGET_FPS)
 
-    LoadingScreen.checkTransitionGameState()
+   
 
     if Globals.GAME_STATE == "loading_screen":
         StartUpScreen.drawBackgroundDisplay()
         StartUpScreen.playBackgroundDisplay()
         StartUpScreen.drawPlayButton()
-        StartUpScreen.drawStartupLogo()
+        StartUpScreen.drawStartupLogo() 
+        LoadingScreen.checkTransitionGameState()
     
 
-    if Globals.GAME_STATE == "main_menu":
+    if Globals.GAME_STATE == "main_menu": 
+        CrusieGameMode.drawPlayerBoundingUi()
         MainMenu.SideMenu.drawMenuOptions()
+        TestScale.drawRects()
+
+       
+
+    if Globals.GAME_STATE == "test_scale":
+        pass
+
+        
 
 
     keys = pygame.key.get_pressed()
@@ -290,6 +370,9 @@ while run:
             if Globals.GAME_STATE == "main_menu":
                 if event.key in MainMenu.SideMenu.actions:
                     MainMenu.SideMenu.actions[event.key]()
+                    TestScale.Camera.actions[event.key]()
+
+           
              
 
 
