@@ -54,7 +54,7 @@ class LoadingScreen:
 
 class StartUpScreen:
 
-    passing_lane_coverart_png = pygame.transform.smoothscale(pygame.image.load("assets//cover_art.png").convert_alpha(),(700/1.2,400/1.2)) 
+    passing_lane_coverart_png = pygame.transform.smoothscale(pygame.image.load("assets\\cover_art.png").convert_alpha(),(700/1.2,400/1.2)) 
     passing_lane_cover_rect = passing_lane_coverart_png.get_rect(center=(passing_lane_coverart_png.get_size()[0]/2,passing_lane_coverart_png.get_size()[1]/2))
     passing_lane_cover_rect.x  = SCREEN_WIDTH/2 - passing_lane_cover_rect.size[0]/2.05
     passing_lane_cover_velocity = -6
@@ -72,7 +72,7 @@ class StartUpScreen:
     def CreateSquares():
         for i in range(6):
             for j in range(4):
-                new_square = LoadingScreen.ParallaxSquare((i*200)-350,(j*200)-200,"assets//Passing lane background scroll.png")
+                new_square = LoadingScreen.ParallaxSquare((i*200)-350,(j*200)-200,"assets\\Passing lane background scroll.png")
                 LoadingScreen.parallax_squares.append(new_square)
 
     CreateSquares()
@@ -134,7 +134,7 @@ class MainMenu:
         menu_options_text = ["Cruise","Garage","Compete","Settings"]
         menu_options = []
         selected_option = 0
-        options_offset = 70
+        options_y_offset = 65
         options_x_end = 40
         
 
@@ -166,7 +166,7 @@ class MainMenu:
                 sidemenu_option = option[1]
 
                
-                sidemenu_option.y = sidemenu_option.start_y + index * MainMenu.SideMenu.options_offset
+                sidemenu_option.y = sidemenu_option.start_y + index * MainMenu.SideMenu.options_y_offset
                 sidemenu_option.rect.y = sidemenu_option.y
 
                 if sidemenu_option.rect.x < MainMenu.SideMenu.options_x_end + index *10 and Globals.GAME_STATE == "main_menu":
@@ -183,8 +183,6 @@ class MainMenu:
                     sidemenu_option.text.set_alpha(max(sidemenu_option.transparency-10,sidemenu_option.set_transparency))
 
                 SCREEN.blit(sidemenu_option.text,sidemenu_option.rect)
-
-
 
 
     class SideMenuOption:
@@ -209,9 +207,7 @@ class MainMenu:
     class SoundEffects():
         pygame.mixer.set_num_channels(8)
 
-
 class CrusieGameMode:
-
 
     class Player:
         def __init__(self,x,y,image,layers,name,top_speed,handling,acceleration,brake):
@@ -235,7 +231,6 @@ class CrusieGameMode:
             self.x_vel = 0
             self.y_vel = 0 
         
-
     def drawPlayerBoundingUi():
         pygame.draw.rect(CrusieGameMode.playerBoundingSurface,(255,0,0),CrusieGameMode.playerBoundingBox,1)
         SCREEN.blit(CrusieGameMode.playerBoundingSurface,(SCREEN_WIDTH/1.2-CrusieGameMode.playerBoundingBox.size[0],SCREEN_HEIGHT/3))
@@ -245,7 +240,19 @@ class CrusieGameMode:
     playerBoundingBox = pygame.Rect(0,0,SCREEN_WIDTH/1.5,SCREEN_HEIGHT/2)
 
     class Road:
-        pass
+
+        road_types = {
+            "default_highways" : {"straight":"assets\\roads\\default_straight_road.png",},
+
+        }
+
+        
+        def __init__(self,x,y,y_vel,road):
+            self.x = x
+            self.y = y  
+            self.y_vel = y_vel
+            self.roads = []
+        
 
         def drawRoad():
             pass
@@ -287,36 +294,37 @@ class TestScale:
             self.color = color
 
     def drawRects():
-        pygame.draw.rect(SCREEN,TestScale.myRect.color,TestScale.myRect.rect,1)
-        pygame.draw.rect(SCREEN,TestScale.otherRect1.color,TestScale.otherRect1.rect,1)
+        for otherRects in TestScale.otherRects:
+            pygame.draw.rect(SCREEN,TestScale.myRect.color,TestScale.myRect.rect,1)
+            pygame.draw.rect(SCREEN,otherRects.color,otherRects.rect,1)
 
     def cameraScale(scale_direction):
-
+                
         TestScale.Camera.globalScale +=1 if scale_direction == "up" else -1 if scale_direction == "down" else None #INCREASES CAMERA GLOBAL SCALE OF BUTTON PRESS UP OR DOWN 
-        xOrientationVal = -1 if TestScale.myRect.x > TestScale.otherRect1.x else 1 if TestScale.myRect.x < TestScale.otherRect1.x else 0 #DETERMINES WHAT SIDE THE RECTANGLE IS ON IN RELATION TO MYRECT
-        yOrientationVal = 1 if TestScale.myRect.y > TestScale.otherRect1.y else -1 if TestScale.myRect.y < TestScale.otherRect1.y else 0 #DETERMINES WHAT SIDE THE RECTANGLE IS ON IN RELATION TO MYRECT
         
-        TestScale.otherRect1.x +=(TestScale.Camera.globalScaleMultipier*xOrientationVal) if scale_direction == "up" else (-TestScale.Camera.globalScaleMultipier*xOrientationVal) if scale_direction == "down" else None #ALLOWS THE OTHER RECTANGLES TO MOVE IN CERTAIN DIRECTION WITH SCALE IN ORIENTATION TO MY RECT 
-        TestScale.otherRect1.y +=(-TestScale.Camera.globalScaleMultipier*yOrientationVal) if scale_direction == "up" else (TestScale.Camera.globalScaleMultipier*yOrientationVal) if scale_direction == "down" else None #ALLOWS THE OTHER RECTANGLES TO MOVE IN CERTAIN DIRECTION WITH SCALE IN ORIENTATION TO MY RECT 
+        for otherRects in TestScale.otherRects:
 
-        TestScale.myRect.rect = pygame.Rect(TestScale.myRect.x-TestScale.Camera.globalScale/2,
-                                            TestScale.myRect.y-TestScale.Camera.globalScale/2,
-                                            TestScale.myRect.width + TestScale.Camera.globalScale,
-                                            TestScale.myRect.height + TestScale.Camera.globalScale)
+            xOrientationVal = -1 if TestScale.myRect.x > otherRects.x else 1 if TestScale.myRect.x < otherRects.x else 0 #DETERMINES WHAT SIDE THE RECTANGLE IS ON IN RELATION TO MYRECT
+            yOrientationVal = 1 if TestScale.myRect.y > otherRects.y else -1 if TestScale.myRect.y < otherRects.y else 0 #DETERMINES WHAT SIDE THE RECTANGLE IS ON IN RELATION TO MYRECT
+            
+            otherRects.x +=(TestScale.Camera.globalScaleMultipier*xOrientationVal) if scale_direction == "up" else (-TestScale.Camera.globalScaleMultipier*xOrientationVal) if scale_direction == "down" else None #ALLOWS THE OTHER RECTANGLES TO MOVE IN CERTAIN DIRECTION WITH SCALE IN ORIENTATION TO MY RECT 
+            otherRects.y +=(-TestScale.Camera.globalScaleMultipier*yOrientationVal) if scale_direction == "up" else (TestScale.Camera.globalScaleMultipier*yOrientationVal) if scale_direction == "down" else None #ALLOWS THE OTHER RECTANGLES TO MOVE IN CERTAIN DIRECTION WITH SCALE IN ORIENTATION TO MY RECT 
 
-        TestScale.otherRect1.rect = pygame.Rect(TestScale.otherRect1.x-TestScale.Camera.globalScale/2,
-                                            TestScale.otherRect1.y-TestScale.Camera.globalScale/2,
-                                            TestScale.otherRect1.width + TestScale.Camera.globalScale,
-                                            TestScale.otherRect1.height + TestScale.Camera.globalScale)
+            TestScale.myRect.rect = pygame.Rect(TestScale.myRect.x-TestScale.Camera.globalScale/2,
+                                                TestScale.myRect.y-TestScale.Camera.globalScale/2,
+                                                TestScale.myRect.width + TestScale.Camera.globalScale,
+                                                TestScale.myRect.height + TestScale.Camera.globalScale)
+
+            otherRects.rect = pygame.Rect(otherRects.x-TestScale.Camera.globalScale/2,
+                                                otherRects.y-TestScale.Camera.globalScale/2,
+                                                otherRects.width + TestScale.Camera.globalScale,
+                                                otherRects.height + TestScale.Camera.globalScale)
 
 
     myRect = MyRect(SCREEN_WIDTH/2-25,SCREEN_HEIGHT/2+50,35,50,(255,255,255))
     otherRect1 = OtherRectangle(600,SCREEN_HEIGHT/2+50,35,50,(255,255,255))
-
-
-        
-
-
+    otherRect2 = OtherRectangle(100,SCREEN_HEIGHT/2+50,35,50,(255,255,255))
+    otherRects = [otherRect1,otherRect2]
 
 
 def fps_counter():
@@ -342,12 +350,13 @@ while run:
     
 
     if Globals.GAME_STATE == "main_menu": 
+        SCREEN.fill((80,80,80))
         CrusieGameMode.drawPlayerBoundingUi()
         MainMenu.SideMenu.drawMenuOptions()
         TestScale.drawRects()
+        
 
-       
-
+    
     if Globals.GAME_STATE == "test_scale":
         pass
 
