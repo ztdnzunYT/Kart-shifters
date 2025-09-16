@@ -21,7 +21,7 @@ class Globals:
     WHITE_COLOR = (255,255,255)
     BLACK_COLOR = (0,0,0) 
     GAME_STATES = ["loading_screen","main_menu","test_scale"]
-    GAME_STATE = "loading_screen"
+    GAME_STATE = "main_menu"
     delta_time = clock.get_time() / 1000
     input_device = "pc"
 
@@ -39,8 +39,8 @@ class LoadingScreen:
         def __init__(self,start_x,start_y,image):
             self.start_x = start_x
             self.start_y = start_y
-            self.image = pygame.transform.smoothscale((pygame.image.load(image).convert_alpha()),(200,200))
-            self.rect = self.image.get_rect(topleft=(start_x,start_y))
+            self.surface = pygame.transform.smoothscale((pygame.image.load(image).convert_alpha()),(200,200))
+            self.rect = self.surface.get_rect(topleft=(start_x,start_y))
             self.transparency = 255
 
     def checkTransitionGameState():
@@ -79,12 +79,12 @@ class StartUpScreen:
 
     def drawBackgroundDisplay():
         for square in LoadingScreen.parallax_squares:
-            square.image.set_alpha(square.transparency)
+            square.surface.set_alpha(square.transparency)
             if LoadingScreen.transition == True:
                 square.transparency = max(square.transparency-4,0)
                 
 
-            SCREEN.blit(square.image,square.rect)
+            SCREEN.blit(square.surface,square.rect)
 
     def playBackgroundDisplay():
         current_time = pygame.time.get_ticks()
@@ -136,7 +136,6 @@ class MainMenu:
         selected_option = 0
         options_y_offset = 65
         options_x_end = 40
-        
 
         actions = {
             pygame.K_w: lambda: MainMenu.SideMenu.getSelectedOption("up"),
@@ -157,7 +156,6 @@ class MainMenu:
                 if MainMenu.SideMenu.selected_option > len(MainMenu.SideMenu.menu_options_text) -1:
                     MainMenu.SideMenu.selected_option = 0
 
-                
         def drawMenuOptions():
 
             for option in enumerate(MainMenu.SideMenu.menu_options) :
@@ -165,7 +163,6 @@ class MainMenu:
                 index = option[0]
                 sidemenu_option = option[1]
 
-               
                 sidemenu_option.y = sidemenu_option.start_y + index * MainMenu.SideMenu.options_y_offset
                 sidemenu_option.rect.y = sidemenu_option.y
 
@@ -183,7 +180,6 @@ class MainMenu:
                     sidemenu_option.text.set_alpha(max(sidemenu_option.transparency-10,sidemenu_option.set_transparency))
 
                 SCREEN.blit(sidemenu_option.text,sidemenu_option.rect)
-
 
     class SideMenuOption:
         text_size = 30
@@ -231,31 +227,54 @@ class CrusieGameMode:
             self.x_vel = 0
             self.y_vel = 0 
         
+    class Road:
+
+        road_types = {
+            "default_highways" : {"straight":"assets\\roads\\default_straight_road.png"},
+        }
+
+        roads = []
+        
+        def __init__(self,x,y,y_vel,road_types):
+            self.x = x
+            self.y = y  
+            self.y_vel = y_vel
+            self.roads = road_types
+            self.surface = pygame.transform.smoothscale_by(pygame.image.load(self.road_types["default_highways"]["straight"]).convert_alpha(),.3)
+            self.rect = self.surface.get_rect(topleft=(0,0))
+
+
+            
+        def drawRoad():
+            for road in CrusieGameMode.Road.roads:
+                SCREEN.blit(road.surface,road.rect)
+                road.rect.y+= 2
+
+                if road.rect.y > SCREEN_HEIGHT + (SCREEN_HEIGHT - road.surface.get_size()[1]) :
+                    road.rect.y = -road.surface.get_size()[1] 
+        
+
+            
+
     def drawPlayerBoundingUi():
-        pygame.draw.rect(CrusieGameMode.playerBoundingSurface,(255,0,0),CrusieGameMode.playerBoundingBox,1)
-        SCREEN.blit(CrusieGameMode.playerBoundingSurface,(SCREEN_WIDTH/1.2-CrusieGameMode.playerBoundingBox.size[0],SCREEN_HEIGHT/3))
+            pygame.draw.rect(CrusieGameMode.playerBoundingSurface,(255,0,0),CrusieGameMode.playerBoundingBox,1)
+            SCREEN.blit(CrusieGameMode.playerBoundingSurface,(SCREEN_WIDTH/1.2-CrusieGameMode.playerBoundingBox.size[0],SCREEN_HEIGHT/3))
 
     playerBoundingSurface = pygame.Surface((SCREEN_WIDTH,SCREEN_HEIGHT),pygame.SRCALPHA)
     playerBoundingSurface.fill((255,255,255,0))
     playerBoundingBox = pygame.Rect(0,0,SCREEN_WIDTH/1.5,SCREEN_HEIGHT/2)
 
-    class Road:
+    for i in range(4):
+        Road.roads.append(Road(0,0,0,Road.road_types["default_highways"]["straight"]))
+        Road.roads[i].rect.y = i * Road.roads[i].surface.get_size()[1]
+    
+    for object in enumerate(Road.roads):
+        index = object[0]
+        road = object[1]
 
-        road_types = {
-            "default_highways" : {"straight":"assets\\roads\\default_straight_road.png",},
+        road.rect.y = index * road.surface.get_size()[1]
 
-        }
-
-        
-        def __init__(self,x,y,y_vel,road):
-            self.x = x
-            self.y = y  
-            self.y_vel = y_vel
-            self.roads = []
-        
-
-        def drawRoad():
-            pass
+    
 
 class TestScale:
 
@@ -351,17 +370,16 @@ while run:
 
     if Globals.GAME_STATE == "main_menu": 
         SCREEN.fill((80,80,80))
+        CrusieGameMode.Road.drawRoad()
         CrusieGameMode.drawPlayerBoundingUi()
         MainMenu.SideMenu.drawMenuOptions()
         TestScale.drawRects()
         
-
-    
+        
     if Globals.GAME_STATE == "test_scale":
         pass
 
         
-
 
     keys = pygame.key.get_pressed()
 

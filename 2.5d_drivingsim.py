@@ -94,7 +94,7 @@ class Kart_layer(pygame.sprite.Sprite):
 #C:\Users\ztdnz\Desktop\Code files\Kart shifters\Kart1
 #x = listdir("/Users/ztdnz/Desktop/Code files/Kart shifters/Kart1")
 
-kart_model = str('emotobike model\\emotobike')
+kart_model = str('Indigo kart model\\Indigo kart')
 layers = listdir(kart_model)
 
 
