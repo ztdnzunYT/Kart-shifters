@@ -230,7 +230,7 @@ class CrusieGameMode:
     class Road:
 
         road_types = {
-            "default_highways" : {"straight":"assets\\roads\\default_straight_road.png"},
+            "default_highways" : {"straight":"assets\\roads\\default_straight_road1.png"},
         }
 
         roads = []
@@ -250,8 +250,8 @@ class CrusieGameMode:
                 SCREEN.blit(road.surface,road.rect)
                 road.rect.y+= 2
 
-                if road.rect.y > SCREEN_HEIGHT + (SCREEN_HEIGHT - road.surface.get_size()[1]) :
-                    road.rect.y = -road.surface.get_size()[1] 
+                if road.rect.y > road.surface.get_size()[1] :
+                    road.rect.y = -road.surface.get_size()[1]
         
 
             
@@ -266,13 +266,16 @@ class CrusieGameMode:
 
     for i in range(4):
         Road.roads.append(Road(0,0,0,Road.road_types["default_highways"]["straight"]))
-        Road.roads[i].rect.y = i * Road.roads[i].surface.get_size()[1]
     
     for object in enumerate(Road.roads):
-        index = object[0]
-        road = object[1]
+        index  = object[0]
+        road = object[1]   
 
-        road.rect.y = index * road.surface.get_size()[1]
+        road.rect.x = (index * road.surface.get_size()[0]/2.5)
+        road.rect.y = (index * road.surface.get_size()[1])
+      
+
+ 
 
     
 
