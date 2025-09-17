@@ -20,8 +20,8 @@ class Globals:
     START_Y = 400
     WHITE_COLOR = (255,255,255)
     BLACK_COLOR = (0,0,0) 
-    GAME_STATES = ["loading_screen","main_menu","test_scale"]
-    GAME_STATE = "main_menu"
+    GAME_STATES = ["startup_screen","main_menu","test_scale"]
+    GAME_STATE = "startup_screen"
     delta_time = clock.get_time() / 1000
     input_device = "pc"
 
@@ -240,18 +240,22 @@ class CrusieGameMode:
             self.y = y  
             self.y_vel = y_vel
             self.roads = road_types
-            self.surface = pygame.transform.smoothscale_by(pygame.image.load(self.road_types["default_highways"]["straight"]).convert_alpha(),.3)
+            self.surface = pygame.transform.smoothscale_by(pygame.image.load(self.road_types["default_highways"]["straight"]).convert_alpha(),.6)
             self.rect = self.surface.get_rect(topleft=(0,0))
-
+            self.rect.x = self.x - self.surface.get_size()[0]/2
 
             
         def drawRoad():
             for road in CrusieGameMode.Road.roads:
                 SCREEN.blit(road.surface,road.rect)
-                road.rect.y+= 2
 
-                if road.rect.y > road.surface.get_size()[1] :
-                    road.rect.y = -road.surface.get_size()[1]
+                road.rect.y +=5
+
+                if road.rect.y >= road.surface.get_size()[1] * 3:
+                    road.rect.y = -(road.surface.get_size()[1] -5)
+                
+            
+                
         
 
             
@@ -265,19 +269,14 @@ class CrusieGameMode:
     playerBoundingBox = pygame.Rect(0,0,SCREEN_WIDTH/1.5,SCREEN_HEIGHT/2)
 
     for i in range(4):
-        Road.roads.append(Road(0,0,0,Road.road_types["default_highways"]["straight"]))
-    
-    for object in enumerate(Road.roads):
-        index  = object[0]
-        road = object[1]   
+        Road.roads.append(Road(SCREEN_WIDTH/2,0,0,Road.road_types["default_highways"]["straight"]))
 
-        road.rect.x = (index * road.surface.get_size()[0]/2.5)
-        road.rect.y = (index * road.surface.get_size()[1])
+    for index,road in enumerate(Road.roads):
+        road.rect.y = -index * road.surface.get_size()[1]
+        
       
 
- 
 
-    
 
 class TestScale:
 
@@ -363,7 +362,7 @@ while run:
 
    
 
-    if Globals.GAME_STATE == "loading_screen":
+    if Globals.GAME_STATE == "startup_screen":
         StartUpScreen.drawBackgroundDisplay()
         StartUpScreen.playBackgroundDisplay()
         StartUpScreen.drawPlayButton()
