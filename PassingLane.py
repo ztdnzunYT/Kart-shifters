@@ -21,7 +21,7 @@ class Globals:
     WHITE_COLOR = (255,255,255)
     BLACK_COLOR = (0,0,0) 
     GAME_STATES = ["startup_screen","main_menu","test_scale"]
-    GAME_STATE = "startup_screen"
+    GAME_STATE = "main_menu"
     delta_time = clock.get_time() / 1000
     input_device = "pc"
 
@@ -235,12 +235,15 @@ class CrusieGameMode:
 
         roads = []
         
-        def __init__(self,x,y,y_vel,road_types):
+        road_scale = .2
+
+        def __init__(self,x,y,y_vel,road_types,road_scale):
             self.x = x
             self.y = y  
             self.y_vel = y_vel
             self.roads = road_types
-            self.surface = pygame.transform.smoothscale_by(pygame.image.load(self.road_types["default_highways"]["straight"]).convert_alpha(),.6)
+            self.road_scale = road_scale
+            self.surface = pygame.transform.smoothscale_by(pygame.image.load(self.road_types["default_highways"]["straight"]).convert_alpha(),self.road_scale)
             self.rect = self.surface.get_rect(topleft=(0,0))
             self.rect.x = self.x - self.surface.get_size()[0]/2
 
@@ -254,25 +257,41 @@ class CrusieGameMode:
                 if road.rect.y >= road.surface.get_size()[1] * 3:
                     road.rect.y = -(road.surface.get_size()[1] -5)
                 
-            
-                
-        
+    class Lane:
 
-            
+        lanes = []
+
+        def __init__(self,width,height,color):
+            self.width = width 
+            self.height = height
+            self.rect = pygame.Rect(0,0,self.width,self.height)
+            self.color = color
+        
+        def draw_lanes():
+
+            for index,lane in enumerate(CrusieGameMode.Lane.lanes):
+                lane.rect.x = lane.width * index + CrusieGameMode.Road.roads[0].rect.centerx 
+                pygame.draw.rect(SCREEN,(lane.color),lane.rect,1)
+                
 
     def drawPlayerBoundingUi():
-            pygame.draw.rect(CrusieGameMode.playerBoundingSurface,(255,0,0),CrusieGameMode.playerBoundingBox,1)
-            SCREEN.blit(CrusieGameMode.playerBoundingSurface,(SCREEN_WIDTH/1.2-CrusieGameMode.playerBoundingBox.size[0],SCREEN_HEIGHT/3))
+        pygame.draw.rect(CrusieGameMode.playerBoundingSurface,(255,0,0),CrusieGameMode.playerBoundingBox,1)
+        SCREEN.blit(CrusieGameMode.playerBoundingSurface,(SCREEN_WIDTH/1.2-CrusieGameMode.playerBoundingBox.size[0],SCREEN_HEIGHT/3))
 
     playerBoundingSurface = pygame.Surface((SCREEN_WIDTH,SCREEN_HEIGHT),pygame.SRCALPHA)
     playerBoundingSurface.fill((255,255,255,0))
     playerBoundingBox = pygame.Rect(0,0,SCREEN_WIDTH/1.5,SCREEN_HEIGHT/2)
 
     for i in range(4):
-        Road.roads.append(Road(SCREEN_WIDTH/2,0,0,Road.road_types["default_highways"]["straight"]))
+        Road.roads.append(Road(SCREEN_WIDTH/2,0,0,Road.road_types["default_highways"]["straight"],Road.road_scale))
+    
+    for i in range(4):
+        Lane.lanes.append(Lane(Road.roads[0].surface.get_size()[0]/10,Road.roads[0].surface.get_size()[1]/10,(0,255,0)))
 
     for index,road in enumerate(Road.roads):
         road.rect.y = -index * road.surface.get_size()[1]
+
+
         
       
 
@@ -372,7 +391,9 @@ while run:
 
     if Globals.GAME_STATE == "main_menu": 
         SCREEN.fill((80,80,80))
-        CrusieGameMode.Road.drawRoad()
+      
+        CrusieGameMode.Road.drawRoad()  
+        CrusieGameMode.Lane.draw_lanes()
         CrusieGameMode.drawPlayerBoundingUi()
         MainMenu.SideMenu.drawMenuOptions()
         TestScale.drawRects()
