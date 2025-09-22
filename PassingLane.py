@@ -21,7 +21,7 @@ class Globals:
     WHITE_COLOR = (255,255,255)
     BLACK_COLOR = (0,0,0) 
     GAME_STATES = ["startup_screen","main_menu","test_scale"]
-    GAME_STATE = "main_menu"
+    GAME_STATE = "startup_screen"
     delta_time = clock.get_time() / 1000
     input_device = "pc"
 
@@ -136,6 +136,11 @@ class MainMenu:
         selected_option = 0
         options_y_offset = 65
         options_x_end = 40
+        
+        sidemenu_surface = pygame.Surface((SCREEN_WIDTH/2.7,SCREEN_HEIGHT),pygame.SRCALPHA)
+
+        sidemenu_rect = pygame.Rect(-50,0,SCREEN_WIDTH/2.7,SCREEN_HEIGHT)
+       
 
         actions = {
             pygame.K_w: lambda: MainMenu.SideMenu.getSelectedOption("up"),
@@ -157,6 +162,8 @@ class MainMenu:
                     MainMenu.SideMenu.selected_option = 0
 
         def drawMenuOptions():
+            pygame.draw.rect(MainMenu.SideMenu.sidemenu_surface,(0,0,0,120),MainMenu.SideMenu.sidemenu_rect)
+            SCREEN.blit(MainMenu.SideMenu.sidemenu_surface,(0,0))
 
             for option in enumerate(MainMenu.SideMenu.menu_options) :
 
@@ -179,6 +186,7 @@ class MainMenu:
                 else:
                     sidemenu_option.text.set_alpha(max(sidemenu_option.transparency-10,sidemenu_option.set_transparency))
 
+                
                 SCREEN.blit(sidemenu_option.text,sidemenu_option.rect)
 
     class SideMenuOption:
@@ -230,12 +238,12 @@ class CrusieGameMode:
     class Road:
 
         road_types = {
-            "default_highways" : {"straight":"assets\\roads\\default_straight_road1.png"},
+            "default_highways" : {"straight":"assets\\roads\\default_straight_road.png"},
         }
 
         roads = []
         
-        road_scale = .2
+        road_scale = .5
 
         def __init__(self,x,y,y_vel,road_types,road_scale):
             self.x = x
@@ -252,7 +260,7 @@ class CrusieGameMode:
             for road in CrusieGameMode.Road.roads:
                 SCREEN.blit(road.surface,road.rect)
 
-                road.rect.y +=5
+                road.rect.y +=10
 
                 if road.rect.y >= road.surface.get_size()[1] * 3:
                     road.rect.y = -(road.surface.get_size()[1] -5)
@@ -270,7 +278,7 @@ class CrusieGameMode:
         def draw_lanes():
 
             for index,lane in enumerate(CrusieGameMode.Lane.lanes):
-                lane.rect.x = lane.width * index + CrusieGameMode.Road.roads[0].rect.centerx 
+                lane.rect.x = lane.width * index + CrusieGameMode.Road.roads[0].rect.centerx - lane.width *2 -1
                 pygame.draw.rect(SCREEN,(lane.color),lane.rect,1)
                 
 
@@ -292,17 +300,12 @@ class CrusieGameMode:
         road.rect.y = -index * road.surface.get_size()[1]
 
 
-        
-      
-
-
-
-class TestScale:
+class FovScale:
 
     class Camera:
         actions = {
-            pygame.K_w: lambda: TestScale.cameraScale("up"),
-            pygame.K_s: lambda: TestScale.cameraScale("down")
+            pygame.K_w: lambda: FovScale.cameraScale("up"),
+            pygame.K_s: lambda: FovScale.cameraScale("down")
         }
 
         startScale = 1
@@ -334,37 +337,52 @@ class TestScale:
             self.color = color
 
     def drawRects():
-        for otherRects in TestScale.otherRects:
-            pygame.draw.rect(SCREEN,TestScale.myRect.color,TestScale.myRect.rect,1)
+        for otherRects in FovScale.otherRects:
+            pygame.draw.rect(SCREEN,FovScale.myRect.color,FovScale.myRect.rect,1)
             pygame.draw.rect(SCREEN,otherRects.color,otherRects.rect,1)
 
     def cameraScale(scale_direction):
                 
-        TestScale.Camera.globalScale +=1 if scale_direction == "up" else -1 if scale_direction == "down" else None #INCREASES CAMERA GLOBAL SCALE OF BUTTON PRESS UP OR DOWN 
+        FovScale.Camera.globalScale +=1 if scale_direction == "up" else -1 if scale_direction == "down" else None #INCREASES CAMERA GLOBAL SCALE OF BUTTON PRESS UP OR DOWN 
         
-        for otherRects in TestScale.otherRects:
+        for otherRects in FovScale.otherRects:
 
-            xOrientationVal = -1 if TestScale.myRect.x > otherRects.x else 1 if TestScale.myRect.x < otherRects.x else 0 #DETERMINES WHAT SIDE THE RECTANGLE IS ON IN RELATION TO MYRECT
-            yOrientationVal = 1 if TestScale.myRect.y > otherRects.y else -1 if TestScale.myRect.y < otherRects.y else 0 #DETERMINES WHAT SIDE THE RECTANGLE IS ON IN RELATION TO MYRECT
+            xOrientationVal = -1 if FovScale.myRect.x > otherRects.x else 1 if FovScale.myRect.x < otherRects.x else 0 #DETERMINES WHAT SIDE THE RECTANGLE IS ON IN RELATION TO MYRECT
+            yOrientationVal = 1 if FovScale.myRect.y > otherRects.y else -1 if FovScale.myRect.y < otherRects.y else 0 #DETERMINES WHAT SIDE THE RECTANGLE IS ON IN RELATION TO MYRECT
             
-            otherRects.x +=(TestScale.Camera.globalScaleMultipier*xOrientationVal) if scale_direction == "up" else (-TestScale.Camera.globalScaleMultipier*xOrientationVal) if scale_direction == "down" else None #ALLOWS THE OTHER RECTANGLES TO MOVE IN CERTAIN DIRECTION WITH SCALE IN ORIENTATION TO MY RECT 
-            otherRects.y +=(-TestScale.Camera.globalScaleMultipier*yOrientationVal) if scale_direction == "up" else (TestScale.Camera.globalScaleMultipier*yOrientationVal) if scale_direction == "down" else None #ALLOWS THE OTHER RECTANGLES TO MOVE IN CERTAIN DIRECTION WITH SCALE IN ORIENTATION TO MY RECT 
+            otherRects.x +=(FovScale.Camera.globalScaleMultipier*xOrientationVal) if scale_direction == "up" else (-FovScale.Camera.globalScaleMultipier*xOrientationVal) if scale_direction == "down" else None #ALLOWS THE OTHER RECTANGLES TO MOVE IN CERTAIN DIRECTION WITH SCALE IN ORIENTATION TO MY RECT 
+            otherRects.y +=(-FovScale.Camera.globalScaleMultipier*yOrientationVal) if scale_direction == "up" else (FovScale.Camera.globalScaleMultipier*yOrientationVal) if scale_direction == "down" else None #ALLOWS THE OTHER RECTANGLES TO MOVE IN CERTAIN DIRECTION WITH SCALE IN ORIENTATION TO MY RECT 
 
-            TestScale.myRect.rect = pygame.Rect(TestScale.myRect.x-TestScale.Camera.globalScale/2,
-                                                TestScale.myRect.y-TestScale.Camera.globalScale/2,
-                                                TestScale.myRect.width + TestScale.Camera.globalScale,
-                                                TestScale.myRect.height + TestScale.Camera.globalScale)
+            FovScale.myRect.rect = pygame.Rect(FovScale.myRect.x-FovScale.Camera.globalScale/2,
+                                                FovScale.myRect.y-FovScale.Camera.globalScale/2,
+                                                FovScale.myRect.width + FovScale.Camera.globalScale,
+                                                FovScale.myRect.height + FovScale.Camera.globalScale)
 
-            otherRects.rect = pygame.Rect(otherRects.x-TestScale.Camera.globalScale/2,
-                                                otherRects.y-TestScale.Camera.globalScale/2,
-                                                otherRects.width + TestScale.Camera.globalScale,
-                                                otherRects.height + TestScale.Camera.globalScale)
+            otherRects.rect = pygame.Rect(otherRects.x-FovScale.Camera.globalScale/2,
+                                                otherRects.y-FovScale.Camera.globalScale/2,
+                                                otherRects.width + FovScale.Camera.globalScale,
+                                                otherRects.height + FovScale.Camera.globalScale)
 
 
     myRect = MyRect(SCREEN_WIDTH/2-25,SCREEN_HEIGHT/2+50,35,50,(255,255,255))
     otherRect1 = OtherRectangle(600,SCREEN_HEIGHT/2+50,35,50,(255,255,255))
     otherRect2 = OtherRectangle(100,SCREEN_HEIGHT/2+50,35,50,(255,255,255))
     otherRects = [otherRect1,otherRect2]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def fps_counter():
@@ -390,13 +408,13 @@ while run:
     
 
     if Globals.GAME_STATE == "main_menu": 
-        SCREEN.fill((80,80,80))
+        SCREEN.fill((80,150,68))
       
         CrusieGameMode.Road.drawRoad()  
         CrusieGameMode.Lane.draw_lanes()
         CrusieGameMode.drawPlayerBoundingUi()
         MainMenu.SideMenu.drawMenuOptions()
-        TestScale.drawRects()
+        FovScale.drawRects()
         
         
     if Globals.GAME_STATE == "test_scale":
@@ -420,7 +438,7 @@ while run:
             if Globals.GAME_STATE == "main_menu":
                 if event.key in MainMenu.SideMenu.actions:
                     MainMenu.SideMenu.actions[event.key]()
-                    TestScale.Camera.actions[event.key]()
+                    FovScale.Camera.actions[event.key]()
 
            
              
