@@ -3,6 +3,7 @@ import math
 pygame.font.init()
 pygame.mixer.init()
 import random
+import os 
 from os import *
 
 SCREEN_WIDTH = 800
@@ -243,7 +244,7 @@ class CrusieGameMode:
 
         roads = []
         
-        road_scale = .5
+        road_scale = .4
 
         def __init__(self,x,y,y_vel,road_types,road_scale):
             self.x = x
@@ -324,50 +325,68 @@ class FovScale:
             self.rect = pygame.Rect(self.x,self.y,self.width,self.height)
             self.color = color
 
-    class OtherRectangle:
+    class Npckarts:
 
-        def __init__(self,x,y,width,height,color):
+        def __init__(self,x,y,width,height,color,path):
             self.x = x 
             self.y = y 
             self.start_x = self.x
             self.start_y = self.y 
+            self.y_velocity = 0 
             self.width = width 
             self.height = height
-            self.rect = pygame.Rect(self.x,self.y,self.width,self.height)
+            self.layer_path = path
+            self.layers = listdir((os.path.abspath(path).replace("\\","/").removeprefix("C:").removesuffix("/Kart shifters")))
+            self.image = pygame.transform.smoothscale(pygame.image.load(path + self.layers[0]).convert_alpha(),(300,300))
+            self.rect = self.image.get_rect()
             self.color = color
 
-    def drawRects():
-        for otherRects in FovScale.otherRects:
-            pygame.draw.rect(SCREEN,FovScale.myRect.color,FovScale.myRect.rect,1)
-            pygame.draw.rect(SCREEN,otherRects.color,otherRects.rect,1)
+    def drawKarts():
+        for kart in FovScale.npcKarts:
+            for layer in kart.layers:
+                image = pygame.image.load(kart.layer_path + layer).convert_alpha()
+                SCREEN.blit(image,(SCREEN_WIDTH/2,SCREEN_HEIGHT/2))
+                
+                
+
+
+
+                
+    
+
+
+
+
+        
+            
 
     def cameraScale(scale_direction):
                 
         FovScale.Camera.globalScale +=1 if scale_direction == "up" else -1 if scale_direction == "down" else None #INCREASES CAMERA GLOBAL SCALE OF BUTTON PRESS UP OR DOWN 
         
-        for otherRects in FovScale.otherRects:
+        for npcKarts in FovScale.npcKarts:
 
-            xOrientationVal = -1 if FovScale.myRect.x > otherRects.x else 1 if FovScale.myRect.x < otherRects.x else 0 #DETERMINES WHAT SIDE THE RECTANGLE IS ON IN RELATION TO MYRECT
-            yOrientationVal = 1 if FovScale.myRect.y > otherRects.y else -1 if FovScale.myRect.y < otherRects.y else 0 #DETERMINES WHAT SIDE THE RECTANGLE IS ON IN RELATION TO MYRECT
+            xOrientationVal = -1 if FovScale.myRect.x > npcKarts.x else 1 if FovScale.myRect.x < npcKarts.x else 0 #DETERMINES WHAT SIDE THE RECTANGLE IS ON IN RELATION TO MYRECT
+            yOrientationVal = 1 if FovScale.myRect.y > npcKarts.y else -1 if FovScale.myRect.y < npcKarts.y else 0 #DETERMINES WHAT SIDE THE RECTANGLE IS ON IN RELATION TO MYRECT
             
-            otherRects.x +=(FovScale.Camera.globalScaleMultipier*xOrientationVal) if scale_direction == "up" else (-FovScale.Camera.globalScaleMultipier*xOrientationVal) if scale_direction == "down" else None #ALLOWS THE OTHER RECTANGLES TO MOVE IN CERTAIN DIRECTION WITH SCALE IN ORIENTATION TO MY RECT 
-            otherRects.y +=(-FovScale.Camera.globalScaleMultipier*yOrientationVal) if scale_direction == "up" else (FovScale.Camera.globalScaleMultipier*yOrientationVal) if scale_direction == "down" else None #ALLOWS THE OTHER RECTANGLES TO MOVE IN CERTAIN DIRECTION WITH SCALE IN ORIENTATION TO MY RECT 
+            npcKarts.x +=(FovScale.Camera.globalScaleMultipier*xOrientationVal) if scale_direction == "up" else (-FovScale.Camera.globalScaleMultipier*xOrientationVal) if scale_direction == "down" else None #ALLOWS THE OTHER RECTANGLES TO MOVE IN CERTAIN DIRECTION WITH SCALE IN ORIENTATION TO MY RECT 
+            npcKarts.y +=(-FovScale.Camera.globalScaleMultipier*yOrientationVal) if scale_direction == "up" else (FovScale.Camera.globalScaleMultipier*yOrientationVal) if scale_direction == "down" else None #ALLOWS THE OTHER RECTANGLES TO MOVE IN CERTAIN DIRECTION WITH SCALE IN ORIENTATION TO MY RECT 
 
             FovScale.myRect.rect = pygame.Rect(FovScale.myRect.x-FovScale.Camera.globalScale/2,
                                                 FovScale.myRect.y-FovScale.Camera.globalScale/2,
                                                 FovScale.myRect.width + FovScale.Camera.globalScale,
                                                 FovScale.myRect.height + FovScale.Camera.globalScale)
 
-            otherRects.rect = pygame.Rect(otherRects.x-FovScale.Camera.globalScale/2,
-                                                otherRects.y-FovScale.Camera.globalScale/2,
-                                                otherRects.width + FovScale.Camera.globalScale,
-                                                otherRects.height + FovScale.Camera.globalScale)
+            npcKarts.rect = pygame.Rect(npcKarts.x-FovScale.Camera.globalScale/2,
+                                                npcKarts.y-FovScale.Camera.globalScale/2,
+                                                npcKarts.width + FovScale.Camera.globalScale,
+                                                npcKarts.height + FovScale.Camera.globalScale)
 
 
     myRect = MyRect(SCREEN_WIDTH/2-25,SCREEN_HEIGHT/2+50,35,50,(255,255,255))
-    otherRect1 = OtherRectangle(600,SCREEN_HEIGHT/2+50,35,50,(255,255,255))
-    otherRect2 = OtherRectangle(100,SCREEN_HEIGHT/2+50,35,50,(255,255,255))
-    otherRects = [otherRect1,otherRect2]
+    npckart1 = Npckarts(600,SCREEN_HEIGHT/2+50,35,50,(255,255,255),"red kart model\\red kart images\\")
+    npckar2 = Npckarts(100,SCREEN_HEIGHT/2+50,35,50,(255,255,255),"Indigo kart model\\Indigo kart\\")
+    npcKarts = [npckart1,npckar2]
 
 
 
@@ -414,14 +433,13 @@ while run:
         CrusieGameMode.Lane.draw_lanes()
         CrusieGameMode.drawPlayerBoundingUi()
         MainMenu.SideMenu.drawMenuOptions()
-        FovScale.drawRects()
+        FovScale.drawKarts()
         
         
     if Globals.GAME_STATE == "test_scale":
         pass
 
-        
-
+    
     keys = pygame.key.get_pressed()
 
     for event in pygame.event.get():

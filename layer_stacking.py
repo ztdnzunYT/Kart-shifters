@@ -33,14 +33,15 @@ class Kart_layer(pygame.sprite.Sprite):
 #C:\Users\ztdnz\Desktop\Code files\Kart shifters\Kart1
 #x = listdir("/Users/ztdnz/Desktop/Code files/Kart shifters/Kart1")
 
-layers = listdir((os.path.abspath('emotobike model\\emotobike').replace("\\","/").removeprefix("C:").removesuffix("/Kart shifters")))
+path = "Indigo kart model\\Indigo kart\\"
+layers = listdir((os.path.abspath(path).replace("\\","/").removeprefix("C:").removesuffix("/Kart shifters")))
 layers.sort(reverse=False)
 print(layers)
 
 for png in enumerate(layers):
     png_number = png[0]
     png_name = png[1]
-    layers[png_number] = "emotobike model\\emotobike\\" + png_name
+    layers[png_number] = path + png_name
 
 kart_layers = pygame.sprite.LayeredUpdates()
 
